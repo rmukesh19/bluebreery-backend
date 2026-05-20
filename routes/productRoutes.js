@@ -38,6 +38,27 @@ router.get('/category/:categoryName', async (req, res) => {
     }
 });
 
+// Get products by subcategory
+router.get('/subcategory/:subcategoryName', async (req, res) => {
+    try {
+        const { subcategoryName } = req.params;
+        const normalized = subcategoryName.toLowerCase().replace(/-/g, ' ');
+        if (!isConnected()) {
+            const products = localDB.getAll('products');
+            const filtered = products.filter(p => p.subcategory && p.subcategory.toLowerCase().replace(/-/g, ' ') === normalized);
+            return res.json(filtered);
+        }
+        // Case-insensitive regex match for subcategory that treats spaces and dashes interchangeably
+        const regexStr = `^${subcategoryName.replace(/-/g, '[- ]')}$`;
+        const products = await Product.find({
+            subcategory: { $regex: new RegExp(regexStr, 'i') }
+        });
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Get single product by slug
 router.get('/slug/:slug', async (req, res) => {
     try {
