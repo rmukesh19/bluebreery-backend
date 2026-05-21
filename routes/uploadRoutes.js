@@ -4,21 +4,7 @@ const multer = require('multer');
 const fs = require('fs');
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    const uploadDir = 'uploads/';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename(req, file, cb) {
-    cb(
-      null,
-      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
-    );
-  },
-});
+const storage = multer.memoryStorage();
 
 function checkFileType(file, cb) {
   // Support a much wider array of common, modern image types
@@ -54,9 +40,14 @@ router.post('/', (req, res) => {
       return res.status(400).json({ message: 'Please select a valid image file to upload.' });
     }
 
+    // Convert file buffer to base64 Data URL
+    const b64 = Buffer.from(req.file.buffer).toString('base64');
+    const mimeType = req.file.mimetype;
+    const dataURI = `data:${mimeType};base64,${b64}`;
+
     res.send({
       message: 'Image uploaded successfully',
-      image: `/${req.file.path}`,
+      image: dataURI,
     });
   });
 });
