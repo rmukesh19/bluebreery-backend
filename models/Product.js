@@ -16,7 +16,19 @@ const productSchema = mongoose.Schema({
     status: { type: String, default: 'Active' },
     description: { type: String },
     sizes: [{ type: String }],
-    colors: [{ type: String }]
+    colors: [{ type: String }],
+    variants: [
+        {
+            color: { type: String },
+            images: [{ type: String }],
+            sizes: [
+                {
+                    size: { type: String },
+                    stock: { type: String }
+                }
+            ]
+        }
+    ]
 }, {
     timestamps: true
 });

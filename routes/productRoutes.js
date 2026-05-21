@@ -23,14 +23,16 @@ router.get('/', async (req, res) => {
 router.get('/category/:categoryName', async (req, res) => {
     try {
         const { categoryName } = req.params;
+        const normalized = categoryName.toLowerCase().replace(/-/g, ' ');
         if (!isConnected()) {
             const products = localDB.getAll('products');
-            const filtered = products.filter(p => p.category && p.category.toLowerCase() === categoryName.toLowerCase());
+            const filtered = products.filter(p => p.category && p.category.toLowerCase().replace(/-/g, ' ') === normalized);
             return res.json(filtered);
         }
-        // Case-insensitive regex match for category
+        // Case-insensitive regex match for category that treats spaces and dashes interchangeably
+        const regexStr = `^${categoryName.replace(/-/g, '[- ]')}$`;
         const products = await Product.find({
-            category: { $regex: new RegExp(`^${categoryName}$`, 'i') }
+            category: { $regex: new RegExp(regexStr, 'i') }
         });
         res.json(products);
     } catch (error) {
