@@ -21,7 +21,31 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-app.use(cors());
+const allowedOrigins = [
+    'https://bluebreery-frontend-2u3j.onrender.com', // Render Frontend
+    'https://bluebreery-frontend.onrender.com',    // Possible alternate
+    'http://localhost:3000',                        // Local Development
+    'http://localhost:5001'                         // Local Backend Debug
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+
+// Explicitly handle OPTIONS preflight for all routes
+app.options('*', cors());
+
 app.use(express.json());
 
 app.use('/api/products', productRoutes);
