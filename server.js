@@ -43,8 +43,6 @@ app.use(cors({
     credentials: true
 }));
 
-// Explicitly handle OPTIONS preflight for all routes
-app.options('/:path*', cors());
 
 app.use(express.json());
 
