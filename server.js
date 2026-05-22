@@ -22,7 +22,8 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 const allowedOrigins = [
-    'https://bluebreery-frontend-2u3j.onrender.com', // Render Frontend
+    'https://blueberries-mens.onrender.com',         // New Frontend
+    'https://bluebreery-frontend-2u3j.onrender.com', // Older Render Frontend
     'https://bluebreery-frontend.onrender.com',    // Possible alternate
     'http://localhost:3000',                        // Local Development
     'http://localhost:5001'                         // Local Backend Debug
